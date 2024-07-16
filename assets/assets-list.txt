@@ -20,6 +20,8 @@ cave_crystal
 cave_tablet
 cave_page
 
+cave_background
+
 -
 
 player_sheet
