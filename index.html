@@ -58,7 +58,7 @@
             console.log(scene)
             this.add.image(400, 400, 'cave_background');
             this.platforms = this.physics.add.staticGroup();
-            this.platforms.create(400, 400, 'cave_ground').setScale(1).refreshBody();
+            this.platforms.create(400, 700, 'cave_ground').setScale(1).refreshBody();
             this.player_temp = this.physics.add.sprite(100, 450, 'player_temp');
             this.player_temp.setBounce(0.2);
             this.player_temp.setCollideWorldBounds(true);
