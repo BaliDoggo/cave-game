@@ -38,6 +38,8 @@
 
     let game = new Phaser.Game(config);
 
+var switch;
+	    
     function preload ()
 	{
     	
@@ -47,6 +49,8 @@
 
 	function create ()
 	{
+	switch = this.input.keyboard.addkey('Q')
+		
     	this.add.image(0,0, 'background');
 	this.player_idle = this.physics.add.sprite(100,100, 'player_idle'); 
 	}
@@ -54,8 +58,17 @@
 
     function update()
     {
-        
+        if (switch.Q.isDown)
+	{
+		level
+	}
     }
+
+function level()
+{
+	
+}
+	    
 
     </script>
 
