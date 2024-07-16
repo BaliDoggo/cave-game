@@ -42,12 +42,13 @@
 	{
     	this.load.image('background', 'assets/cave/cave_background.png');
 	this.load.atlas('player', 'assets/player/character_run/character_run.png', 'assets/player/character_run/character_run.json');
+	this.load.image('player_idle', 'assets/player/character_idle.png');
 	}
 
 	function create ()
 	{
     	this.add.image(0,0, 'background');
-	this.player = this.physics.add.sprite(100,100, 'player'); 
+	this.player_idle = this.physics.add.sprite(100,100, 'player_idle'); 
 	}
 
 
