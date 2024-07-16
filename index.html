@@ -45,7 +45,6 @@ var switch1;
     	this.load.image('cave_background', 'assets/cave/cave_background.png')
 	this.load.image('cave_ground', 'assets/cave/cave_ground.png')
 	this.load.atlas('player', 'assets/player/character_run/character_run.png', 'assets/player/character_run/character_run.json');
-	this.load.image('player_idle', 'assets/player/character_idle.png');
 	}
 
 	function create ()
@@ -69,7 +68,7 @@ function level()
 	this.platforms = this.physics.add.staticGroup();
 	this.platforms.create(400, 400, 'cave_ground').setScale(1).refreshBody();
 
-	this.player = this.physics.add.sprite(100, 450, 'player_idle');
+	this.player = this.physics.add.sprite(100, 450, 'player');
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
 
