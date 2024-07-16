@@ -39,14 +39,15 @@
     let game = new Phaser.Game(config);
 
     function preload ()
-    {
-        
-    }
+	{
+    	this.load.image('background', 'assets/cave/cave_background.png');
+	}
 
-    function create ()
-    {
-        
-    }
+	function create ()
+	{
+    	this.add.image(0,0, 'background');
+	}
+
 
     function update()
     {
