@@ -4,8 +4,10 @@ shop_power_jump
 
 -
 
-cave_stites
-cave_smites
+cave_stites_1
+cave_stites_2
+cave_smites_1
+cave_smites_2
 cave_pool
 cave_stream
 cave_exit
