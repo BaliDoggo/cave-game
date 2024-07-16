@@ -2,7 +2,8 @@ stites_1
 stites_2
 smites_1
 smites_2
-pool
+pool_1
+pool_2
 stream
 exit
 
