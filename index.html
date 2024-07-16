@@ -31,6 +31,8 @@
         let game = new Phaser.Game(config);
 
         var switch1;
+        var keys;
+        var scene;
 
         function preload () {
             this.load.image('cave_background', 'New Piskel.png');
@@ -39,16 +41,21 @@
         }
 
         function create () {
-            switch1 = this.input.keyboard.addKey('Q');  
+            lobby.call(this)
+            switch1 = this.input.keyboard.addKey('Q');
+            keys = this.input.keyboard.addKeys('W, A, S, D');
         }
 
         function update() {
             if (switch1.isDown) {  
                 level.call(this);  
             }
+            if 
         }
 
         function level() {
+            scene = 'level'
+            console.log(scene)
             this.add.image(400, 400, 'cave_background');
             this.platforms = this.physics.add.staticGroup();
             this.platforms.create(400, 400, 'cave_ground').setScale(1).refreshBody();
@@ -57,6 +64,11 @@
             this.player.setCollideWorldBounds(true);
             this.physics.add.collider(this.player, this.platforms);
         }
+
+        function lobby() {
+            scene = 'lobby'
+        }
+        
     </script>
 </body>
 
