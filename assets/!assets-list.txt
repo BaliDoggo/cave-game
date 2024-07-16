@@ -8,8 +8,8 @@ cave_stites_1
 cave_stites_2
 cave_smites_1
 cave_smites_2
-cave_pool
-cave_stream
+cave_pool_1
+cave_pool_2
 cave_exit
 
 cave_power_health
