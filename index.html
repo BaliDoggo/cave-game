@@ -17,9 +17,6 @@
             height: 800,
             physics: {
                 default: 'arcade',
-                arcade: {
-                    gravity: { y: 800 }
-                }
             },
             scene: {
                 preload: preload,
@@ -27,15 +24,48 @@
                 update: update,
             }
         };
+        
+        class Player extends Phaser.Physics.Arcade.Sprite {  
+            animations;
+            constructor(scene, x, y, spritesheet, animations) {
+                super(scene, x, y, spritesheet);
+                this.animations = animations;
+                scene.add.existing(this);
+                scene.physics.add.existing(this);
+                this.setScale(0.5);
+                this.setCollideWorldBounds(true)
+                this.setGravityY(1500)
+                this.setBounce(0, 0)
+            }
+        }
+        
+        class Platform extends Phaser.Physics.Arcade.Sprite {
+            constructor(scene, x, y, image) {
+                super(scene, x, y, image);
+                scene.add.existing(this);
+                scene.physics.add.existing(this);
+                this.setCollideWorldBounds(true)
+                this.setGravityY(0)
+                this.setBounce(0, 0)
+                this.bodyType = 1
+                
+            }
+        }
 
         var game = new Phaser.Game(config);
 
         
         var player;
+        var platforms;
+        var platform;
         
         var switch1;
         var keys;
         var scene;
+        
+        var graphics;
+        
+        var jump;
         
         
 
@@ -44,13 +74,15 @@
             this.load.image('cave_ground', 'assets/cave/cave_ground.png');
             this.load.atlas('player', 'assets/player/player.png', 'assets/player/player.json');
             this.load.image('player_old', 'assets/player/player_idle.png')
+            this.load.image('platform', 'assets/platform.png');
         }
 
         function create () {
-            var player;
             lobby.call(this)
             switch1 = this.input.keyboard.addKey('Q');
-            keys = this.input.keyboard.addKeys('W, A, S, D');
+            keys = this.input.keyboard.addKeys('W, A, S, D, M');
+            
+            graphics = this.add.graphics()
         }
 
         function update() {
@@ -60,20 +92,27 @@
             
             if (scene === 'level'){
                 
-                if (keys.W.isDown){
-                    player.setVelocityY(-50)
+                if (keys.W.isDown && jump === true){
+                    player.setVelocityY(-500)
+                    jump = false
                 }
-                
                 if (keys.A.isDown){
-                    player.setVelocityX(-200)
+                    player.setVelocityX(-250)
+                    player.play(player.animations['run_l'], true);
+                } else if (keys.D.isDown){
+                    player.setVelocityX(250)
+                    player.play(player.animations['run_r'], true);
+                } else {
+                    player.setVelocityX(0)
+                    player.play(player.animations['idle_l'], true);
                 }
                 
                 if (keys.S.isDown){
                     return
                 }
                 
-                if (keys.D.isDown){
-                    player.setVelocityX(200)
+                if (player.body.touching.down) {
+                    jump = true
                 }
                 
             }
@@ -88,36 +127,37 @@
         function level() {
             scene = 'level'
             console.log(scene)
-            
-            this.add.image(400, 400, 'cave_background');
-            this.platforms = this.physics.add.staticGroup();
-            this.platforms.create(400, 400, 'cave_ground').setScale(1).refreshBody();
-            this.physics.add.collider(this.player, this.platforms);
+            jump = true
+
+            this.add.image(400, 500, 'cave_background').setScale(1.25);
             
             let playerAnims = {};
-            var idle_l = this.anims.create({key: 'idle_l', frames: this.anims.generateFrameNames('player', idle_l), repeat: -1, frameRate: 10})
+            var idle_l = this.anims.create({key: 'idle_l', frames: this.anims.generateFrameNames('player', {prefix: 'idle_l', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['idle_l'] = idle_l
+            var idle_r = this.anims.create({key: 'idle_r', frames: this.anims.generateFrameNames('player', {prefix: 'idle_r', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['idle_r'] = idle_r
+            var run_l = this.anims.create({key: 'run_l', frames: this.anims.generateFrameNames('player', {prefix: 'run_l_', end: 3, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['run_l'] = run_l
+            var run_r = this.anims.create({key: 'run_r', frames: this.anims.generateFrameNames('player', {prefix: 'run_r_', end: 3, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['run_r'] = run_r
             
-            /*player = new Player(this, 400, 400, 'player', playerAnims);
-            this.physics.add.collider(player, platforms);
-            player.play(player.animations['idle_l']);*/
-
+            platform = this.physics.add.staticGroup();
+            platform.create(400, 800, 'cave_ground').setScale(1).refreshBody();
+            
+            player = new Player(this, 400, 400, 'player', playerAnims);
+            this.physics.add.collider(player, platform);
+            player.play(player.animations['idle_l']);
+        }
+        
+        function createGround(scene) {
+            return
         }
 
         function lobby() {
             scene = 'lobby'
         }
         
-        class Player extends Phaser.Physics.Arcade.Sprite {
-            animations;
-            constructor(scene, x, y, spritesheet, animations) {
-                super(scene, x, y, spritesheet);
-                this.animations = animations;
-                scene.add.existing(this);
-                this.setScale(1);
-                this.setCollideWorldBounds(true);
-                this.setGravityY(800);
-            }
-        }
+        
         
     </script>
 </body>
