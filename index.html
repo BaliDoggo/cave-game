@@ -18,7 +18,7 @@
             physics: {
                 default: 'arcade',
                 arcade: {
-                    gravity: { y: 90 }
+                    gravity: { y: 800 }
                 }
             },
             scene: {
@@ -28,20 +28,26 @@
             }
         };
 
-        let game = new Phaser.Game(config);
+        var game = new Phaser.Game(config);
 
+        
+        var player;
+        
         var switch1;
         var keys;
         var scene;
+        
+        
 
         function preload () {
             this.load.image('cave_background', 'assets/cave/cave_background.png');
             this.load.image('cave_ground', 'assets/cave/cave_ground.png');
             this.load.atlas('player', 'assets/player/player.png', 'assets/player/player.json');
-            this.load.image('player_temp', 'assets/player/player_idle.png')
+            this.load.image('player_old', 'assets/player/player_idle.png')
         }
 
         function create () {
+            var player;
             lobby.call(this)
             switch1 = this.input.keyboard.addKey('Q');
             keys = this.input.keyboard.addKeys('W, A, S, D');
@@ -51,22 +57,66 @@
             if (switch1.isDown) {  
                 level.call(this);  
             }
+            
+            if (scene === 'level'){
+                
+                if (keys.W.isDown){
+                    player.setVelocityY(-50)
+                }
+                
+                if (keys.A.isDown){
+                    player.setVelocityX(-200)
+                }
+                
+                if (keys.S.isDown){
+                    return
+                }
+                
+                if (keys.D.isDown){
+                    player.setVelocityX(200)
+                }
+                
+            }
+            
+            if (scene === 'lobby'){
+                
+                
+                
+            }
         }
 
         function level() {
             scene = 'level'
             console.log(scene)
+            
             this.add.image(400, 400, 'cave_background');
             this.platforms = this.physics.add.staticGroup();
-            this.platforms.create(400, 700, 'cave_ground').setScale(1).refreshBody();
-            this.player_temp = this.physics.add.sprite(100, 450, 'player_temp');
-            this.player_temp.setBounce(0.2);
-            this.player_temp.setCollideWorldBounds(true);
-            this.physics.add.collider(this.player_temp, this.platforms);
+            this.platforms.create(400, 400, 'cave_ground').setScale(1).refreshBody();
+            this.physics.add.collider(this.player, this.platforms);
+            
+            let playerAnims = {};
+            var idle_l = this.anims.create({key: 'idle_l', frames: this.anims.generateFrameNames('player', idle_l), repeat: -1, frameRate: 10})
+            
+            /*player = new Player(this, 400, 400, 'player', playerAnims);
+            this.physics.add.collider(player, platforms);
+            player.play(player.animations['idle_l']);*/
+
         }
 
         function lobby() {
             scene = 'lobby'
+        }
+        
+        class Player extends Phaser.Physics.Arcade.Sprite {
+            animations;
+            constructor(scene, x, y, spritesheet, animations) {
+                super(scene, x, y, spritesheet);
+                this.animations = animations;
+                scene.add.existing(this);
+                this.setScale(1);
+                this.setCollideWorldBounds(true);
+                this.setGravityY(800);
+            }
         }
         
     </script>
