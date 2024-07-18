@@ -8,6 +8,28 @@
 
 <body>
     <script>
+        
+                   var gui;
+                   var guiTimer;
+        var overlay;
+                   var overlayVisible;
+                    var backgroundMusic;
+
+          class Playertd extends Phaser.Physics.Arcade.Sprite
+                   {
+                       totalJumps = 2;
+                       currentJumps = 0;
+                       constructor(scene, x, y)
+                       {
+                           super(scene, x, y, 'player');
+                           scene.add.existing(this);
+                           scene.physics.add.existing(this);
+                           this.setScale(1);
+                           this.setCollideWorldBounds(true);
+                           this.setGravityY(0); //We will set gravity *per object* rather than for the scene!
+                       }
+                   }
+
         class PhysicsSprite extends Phaser.Physics.Arcade.Sprite {
         }
 
@@ -75,6 +97,26 @@
             this.load.atlas('player', 'assets/player/player.png', 'assets/player/player.json');
             this.load.image('player_old', 'assets/player/player_idle.png')
             this.load.image('platform', 'assets/platform.png');
+                        this.load.image('lobby', 'assets/lobby.png');
+                       this.load.image('player', 'assets/playerf1.png');
+                       this.load.image('playerr1', 'assets/playerr1.png');
+                       this.load.image('playerl1', 'assets/playerl1.png');
+                       this.load.image('playerb1', 'assets/playerb1.png');
+                       this.load.image('playerf2', 'assets/playerf2.png');
+                       this.load.image('playerf3', 'assets/playerf3.png');
+                       this.load.image('playerr2', 'assets/playerr2.png');
+                       this.load.image('playerr3', 'assets/playerr3.png');
+                       this.load.image('playerl2', 'assets/playerl2.png');
+                       this.load.image('playerl3', 'assets/playerl3.png');
+                       this.load.image('playerb2', 'assets/playerb2.png');
+                       this.load.image('playerb3', 'assets/playerb3.png');
+                       this.load.image('overlay', 'assets/upgrade.png');
+                       this.load.image('shop', 'assets/shop.png');
+                       this.load.image('guild', 'assets/guild.png');
+                       this.load.image('teleporter', 'assets/teleporter.png');
+                       this.load.audio('backgroundMusic', 'assets/backgroundMusic.mp3');
+                       this.load.image('stonepick', 'assets/stonepick.png');
+        
         }
 
         function create () {
@@ -119,6 +161,109 @@
             }
             
             if (scene === 'lobby'){
+                                    if (player.x > 500 && player.x < 750 && player.y > 50 && player.y < 140) {
+                           gui.setText('Press F to enter Blacksmith');
+                           if (Phaser.Input.Keyboard.JustDown(keys.F)) {
+                               if (!overlayVisible) {
+                                   // Create and show the overlay
+                                   overlay = this.add.image(0, 0, 'overlay').setOrigin(0);
+                                   overlay.setDepth(1); // Ensure overlay is above other game elements
+                                   overlayVisible = true;
+                               } else {
+                                   // Hide the overlay
+                                   overlay.destroy(); // Remove the overlay from the scene
+                                   overlayVisible = false;
+                               }
+                           }
+                       guiTimer = this.time.delayedCall(1000, removeText, [], this);
+                       }
+
+
+                       if (player.x > 50 && player.x < 200 && player.y > 50 && player.y < 150){
+                           gui.setText('Press F to enter Market');
+                           if (Phaser.Input.Keyboard.JustDown(keys.F)) {
+                               if (!overlayVisible) {
+                                   // Create and show the overlay
+                                   overlay = this.add.image(0, 0, 'shop').setOrigin(0);
+                                   overlay.setDepth(1); // Ensure overlay is above other game elements
+                                   overlayVisible = true;
+                               } else {
+                                   // Hide the overlay
+                                   overlay.destroy(); // Remove the overlay from the scene
+                                   overlayVisible = false;
+                               }
+                           }
+                           guiTimer = this.time.delayedCall(1000, removeText, [], this);
+
+                       }
+                       if (player.x > 500 && player.x < 750 && player.y > 600 && player.y < 750){
+                           gui.setText('Press F to enter Miners Guild');
+                           if (Phaser.Input.Keyboard.JustDown(keys.F)) {
+                               if (!overlayVisible) {
+                                   // Create and show the overlay
+                                   overlay = this.add.image(0, 0, 'guild').setOrigin(0);
+                                   overlay.setDepth(1); // Ensure overlay is above other game elements
+                                   overlayVisible = true;
+                               } else {
+                                   // Hide the overlay
+                                   overlay.destroy(); // Remove the overlay from the scene
+                                   overlayVisible = false;
+                               }
+                           }
+                           guiTimer = this.time.delayedCall(1000, removeText, [], this);
+
+                       }
+
+                       if (player.x > 340 && player.x < 460 && player.y > 340 && player.y < 450){
+                           gui.setText('Press F to enter Teleporter');
+                           if (Phaser.Input.Keyboard.JustDown(keys.F)) {
+                               if (!overlayVisible) {
+                                   // Create and show the overlay
+                                   overlay = this.add.image(0, 0, 'teleporter').setOrigin(0);
+                                   overlay.setDepth(1); // Ensure overlay is above other game elements
+                                   overlayVisible = true;
+                               } else {
+                                   // Hide the overlay
+                                   overlay.destroy(); // Remove the overlay from the scene
+                                   overlayVisible = false;
+                               }
+                           }
+                           guiTimer = this.time.delayedCall(1000, removeText, [], this);
+
+                       }
+
+                       //console.log(player.x);
+                       //console.log(player.y);
+
+                       player.setVelocityX(0);
+
+                       //Player has "drag" on the x-axis meaning they slide a bit after an input
+                       player.setDragX(1000);
+                       player.setDragY(1000);
+
+
+
+                       //Handle player movements
+                      if (cursors.left.isDown || keys.A.isDown) {
+                       player.setVelocityX(-100);
+                       player.anims.play('left', true);
+                   } else if (cursors.right.isDown || keys.D.isDown) {
+                       player.setVelocityX(100);
+                       player.anims.play('right', true);
+                   } else if (cursors.up.isDown || keys.W.isDown) {
+                       player.setVelocityY(-100);
+                       player.anims.play('up', true);
+                   }
+                       else if (cursors.down.isDown || keys.S.isDown) {
+                       player.setVelocityY(100);
+                       player.anims.play('down', true);
+                   } else {
+                       player.anims.stop();
+                       // Set a default frame when not moving
+                       player.setTexture('player'); // Replace 'player' with the default facing frame
+                   }
+
+
                 
                 
                 
@@ -157,6 +302,80 @@
 
         function lobby() {
             scene = 'lobby'
+            let background = this.add.tileSprite(0, 0, game.scale.width, game.scale.height, 'lobby').setOrigin(0, 0);
+
+                       backgroundMusic = this.sound.add('backgroundMusic', { volume: 1.5, loop: true });
+                       backgroundMusic.play();
+
+                      player = new Playertd(this, 400, 400);
+
+
+                      this.physics.add.overlap(player, carrots, eatCarrot, null, this);
+
+                      //Set up user input
+                      cursors = this.input.keyboard.createCursorKeys();
+                      keys = this.input.keyboard.addKeys('W, A, S, D, F');
+                      
+
+                      gui = this.add.text(0, 0, '', {fontSize: '45px', fill: '#fcfcfc'});
+
+
+                       guiTimer = this.time.delayedCall(1000, removeText, [], this);
+
+
+                       this.anims.create({
+                       key: 'left',
+                       frames: [
+                           { key: 'playerl1' },
+                           { key: 'playerl2' },
+                           { key: 'playerl3' }
+                       ],
+                       frameRate: 10,
+                       repeat: -1
+                   });
+
+                   this.anims.create({
+                       key: 'right',
+                       frames: [
+                           { key: 'playerr1' },
+                           { key: 'playerr2' },
+                           { key: 'playerr3' }
+                       ],
+                       frameRate: 10,
+                       repeat: -1
+                   });
+
+                   this.anims.create({
+                       key: 'up',
+                       frames: [
+                           { key: 'player' },
+                           { key: 'playerf2' },
+                           { key: 'playerf3' }
+                       ],
+                       frameRate: 10,
+                       repeat: -1
+                   });
+
+                    this.anims.create({
+                       key: 'down',
+                       frames: [
+                           { key: 'playerb1' },
+                           { key: 'playerb2' },
+                           { key: 'playerb3' }
+                       ],
+                       frameRate: 10,
+                       repeat: -1
+                   });
+
+
+                 
+                       
+                     this.input.on('pointermove', function (pointer) {
+            console.log(`Mouse Position: x=${pointer.x}, y=${pointer.y}`);
+        });
+
+                        
+                   
         }
         
         
