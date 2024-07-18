@@ -101,6 +101,7 @@
                     player.play(player.animations['run_l'], true);
                 } else if (keys.D.isDown){
                     player.setVelocityX(250)
+                    background.tilePositionX += 2;
                     player.play(player.animations['run_r'], true);
                 } else {
                     player.setVelocityX(0)
@@ -129,7 +130,8 @@
             console.log(scene)
             jump = true
 
-            this.add.image(400, 500, 'cave_background').setScale(1.25);
+
+            background = this.add.tileSprite(400, 400, 800, 800, 'cave_background').setScale(1.25);
             
             let playerAnims = {};
             var idle_l = this.anims.create({key: 'idle_l', frames: this.anims.generateFrameNames('player', {prefix: 'idle_l', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
