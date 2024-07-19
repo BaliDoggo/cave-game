@@ -469,6 +469,52 @@
         guiTimer = this.time.delayedCall(1000, removeText, [], this);
     }
 
+    function obstacleCollision(player, obstacle) {
+            gameOver = true; 
+
+            player.setVelocityX(0);
+            player.setVelocityY(0);
+            player.body.enable = false;
+
+            const bannerWidth = 1600;
+            const bannerHeight = 100;
+            const bannerX = 800 - bannerWidth / 2;
+            const bannerY = 400 - bannerHeight / 2;
+
+            const graphics = this.add.graphics();
+            graphics.fillStyle(0x000000, 0.5); 
+            graphics.fillRect(bannerX, bannerY, bannerWidth, bannerHeight);
+
+            let gameOverText = this.add.text(800, 400, "GAME OVER", {
+                fontSize: '64px',
+                color: '#9e0b0b',
+                fontFamily: 'Stencil Std',
+            });
+            gameOverText.setOrigin(0.5, 0.5);
+
+            this.time.delayedCall(2000, () => {
+                levelTwo.call(this);
+            }, [], this);
+        }
+
+        function playerWin(player, teleporter) {
+            const bannerWidth = 1600;
+            const bannerHeight = 100;
+            const bannerX = 800 - bannerWidth / 2;
+            const bannerY = 400 - bannerHeight / 2;
+
+            const graphics = this.add.graphics();
+            graphics.fillStyle(0x000000, 0.5); 
+            graphics.fillRect(bannerX, bannerY, bannerWidth, bannerHeight);
+
+            let winText = this.add.text(800, 400, 'YOU WIN!', {
+                fontSize: '64px',
+                color: '#f5e410',
+                fontFamily: 'Stencil Std',
+            });
+            winText.setOrigin(0.5, 0.5);
+        }
+
     function removeText()
     {
         gui.setText('');
