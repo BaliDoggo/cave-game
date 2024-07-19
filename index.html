@@ -498,7 +498,9 @@
                      this.input.on('pointermove', function (pointer) {
             console.log(`Mouse Position: x=${pointer.x}, y=${pointer.y}`);
         });
-
+        this.input.on('pointerdown', (pointer) => {
+                if (overlayVisible && pointer.x >= 140 && pointer.x <= 669 && pointer.y >= 193 && pointer.y <= 246) {
+                levelOne.call(this);
                         
                    
         }
