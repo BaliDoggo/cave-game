@@ -527,13 +527,37 @@
             stalagmite1.setScale(0.2);
             stalagmite1.body.setScale(0.15)
 
-            caveTeleporter = this.physics.add.image(1530, 480, 'cave_teleporter');
+            let stalagmite2 = this.physics.add.image(950, 530, 'stalagmite2');
+            stalagmite2.body.setAllowGravity(false); 
+            stalagmite2.body.immovable = true; 
+            stalagmite2.setScale(0.1);
+
+            let stalagmite3 = this.physics.add.image(1030, 530, 'stalagmite1'); 
+            stalagmite3.body.setAllowGravity(false);
+            stalagmite3.body.immovable = true; 
+            stalagmite3.setScale(0.1);
+
+            let stalagmite4 = this.physics.add.image(1300, 530, 'stalagmite1'); 
+            stalagmite4.body.setAllowGravity(false);
+            stalagmite4.body.immovable = true; 
+            stalagmite4.setScale(0.1);
+
+            let stalactite = this.physics.add.image(1300, 250, 'stalactite'); 
+            stalactite.body.setAllowGravity(false);
+            stalactite.body.immovable = true; 
+            stalactite.displayHeight = 800; 
+            stalactite.setScale(0.1);
+
+            let caveTeleporter = this.physics.add.image(1530, 480, 'cave_teleporter');
             caveTeleporter.body.setAllowGravity(false);
             caveTeleporter.body.immovable = true; 
             caveTeleporter.setScale(0.2);
 
             let block = this.platforms.create(600,500, 'block');
             block.setScale(0.5);
+
+            let block2 = this.platforms.create(990,540, 'block');
+            block2.setScale(0.5);
         
             let playerAnims = {};
             var idle_l = this.anims.create({key: 'idle_l', frames: this.anims.generateFrameNames('player', {prefix: 'idle_l', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
