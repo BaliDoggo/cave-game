@@ -576,8 +576,13 @@
             this.physics.world.setBounds(0,0,1600,800);
 
             this.physics.add.collider(player, block);
-            this.physics.add.collider(player, lava, obstacleCollision, null, this);
+            this.physics.add.collider(player, block2);
+            this.physics.add.overlap(player, lava, obstacleCollision, null, this);
             this.physics.add.collider(player, stalagmite1, obstacleCollision, null, this);
+            this.physics.add.collider(player, stalagmite2, obstacleCollision, null, this);
+            this.physics.add.collider(player, stalagmite3, obstacleCollision, null, this);
+            this.physics.add.collider(player, stalagmite4, obstacleCollision, null, this);
+            this.physics.add.collider(player, stalactite, obstacleCollision, null, this);
             this.physics.add.overlap(player, caveTeleporter, playerWin, null, this);
         }
 
