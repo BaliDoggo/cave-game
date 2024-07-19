@@ -127,8 +127,13 @@
         function preload () {
             this.load.image('cave_background', 'assets/cave/cave_background.png');
             this.load.image('cave_ground', 'assets/cave/cave_ground.png');
+            this.load.image('lava', 'assets/cave/lava.png'); 
+            this.load.audio('cave_song', 'assets/cave/cave_song.m4a');
+            this.load.image('block', 'assets/cave/block.png');
+            this.load.image('cave_teleporter', 'assets/cave/cave_teleporter.png'); 
+            this.load.image('stalagmite1', 'assets/cave/cave_smites_1.png');
             this.load.atlas('player', 'assets/player/player.png', 'assets/player/player.json');
-            this.load.image('player_old', 'assets/player/player_idle.png')
+            this.load.image('player_old', 'assets/player/player_idle.png');
             this.load.image('platform', 'assets/platform.png');
             this.load.tilemapTiledJSON('level_1', 'assets/cave/levels/level_1.json')
             this.load.image('lobby', 'assets/lobby.png');
@@ -381,6 +386,68 @@
             //this.add.existing(current_level)
             //this.physics.add.existing(current_level)
             
+        }
+
+        function levelTwo() {
+            resizeGame(1600,800);
+            scene = 'levelTwo'
+            jump = true
+            gameOver = false;
+            console.log(scene)
+
+            music = this.sound.add('cave_song'); 
+            music.play({
+                loop: true
+            });
+
+            this.add.image(400,700, 'cave_ground');
+
+            this.platforms = this.physics.add.staticGroup();
+            let ground = this.platforms.create(800, 700, 'cave_ground');
+            ground.displayWidth = 1600;
+            ground.refreshBody();
+
+
+            background = this.add.tileSprite(800, 400, 1600, 800, 'cave_background');
+
+            let lava = this.physics.add.image(600,561, 'lava');
+            lava.body.setAllowGravity(false);
+            lava.body.immovable = true;
+            lava.setScale(2.2);
+
+            let stalagmite1 = this.physics.add.image(300, 530, 'stalagmite1'); 
+            stalagmite1.body.setAllowGravity(false);
+            stalagmite1.body.immovable = true; 
+            stalagmite1.setScale(0.1);
+
+            let caveTeleporter = this.physics.add.image(1530, 480, 'cave_teleporter');
+            caveTeleporter.body.setAllowGravity(false);
+            caveTeleporter.body.immovable = true; 
+            caveTeleporter.setScale(0.2);
+
+            let block = this.platforms.create(600,500, 'block');
+            block.setScale(0.5);
+        
+            let playerAnims = {};
+            var idle_l = this.anims.create({key: 'idle_l', frames: this.anims.generateFrameNames('player', {prefix: 'idle_l', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['idle_l'] = idle_l
+            var idle_r = this.anims.create({key: 'idle_r', frames: this.anims.generateFrameNames('player', {prefix: 'idle_r', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['idle_r'] = idle_r
+            var run_l = this.anims.create({key: 'run_l', frames: this.anims.generateFrameNames('player', {prefix: 'run_l_', end: 3, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['run_l'] = run_l
+            var run_r = this.anims.create({key: 'run_r', frames: this.anims.generateFrameNames('player', {prefix: 'run_r_', end: 3, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['run_r'] = run_r
+
+            player = new Player(this, 100, 400, 'player', playerAnims);
+            this.physics.add.collider(player, ground);
+            player.play(player.animations['idle_l']);
+
+            this.physics.world.setBounds(0,0,1600,800);
+
+            this.physics.add.collider(player, block);
+            this.physics.add.collider(player, lava, obstacleCollision, null, this);
+            this.physics.add.collider(player, stalagmite1, obstacleCollision, null, this);
+            this.physics.add.overlap(player, caveTeleporter, playerWin, null, this);
         }
 
         function lobby() {
