@@ -103,6 +103,9 @@
 
         var game = new Phaser.Game(config);
         
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+
         var player;
         var platforms;
         var platform;
@@ -162,7 +165,8 @@
         }
 
         function create () {
-            
+            backgroundMusic = this.sound.add('backgroundMusic', { volume: 1.5, loop: true });
+            backgroundMusic.play();
             lobby.call(this)
             switch1 = this.input.keyboard.addKey('Q');
             switch2 = this.input.keyboard.addKey('P');
@@ -190,7 +194,6 @@
                 if (game.input.activePointer.isDown) {
                     var mine = true
                     player.setVelocityX(0)
-                    console.log(mine)
                 } else {
                     mine = false
                 }
@@ -343,6 +346,7 @@
 
             background = this.add.tileSprite(800, 500, 1600, 800, 'cave_background').setScale(1.25);
             crystal = this.physics.add.image(1000, 600, 'crystal').setScale(0.25)
+            let caveTeleporter = this.physics.add.image(1530, 410, 'cave_teleporter').setScale(0.2);
 
             let playerAnims = {};
             var idle_l = this.anims.create({key: 'idle_l', frames: this.anims.generateFrameNames('player', {prefix: 'idle_l', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
@@ -376,7 +380,8 @@
             
             //this.cameras.main.startFollow(player, true)
             
-            this.physics.add.overlap(player, crystal, mineCrystal, null, this)
+            this.physics.add.overlap(player, crystal, mineCrystal)
+            this.physics.add.overlap(player, caveTeleporter, lobby, null, this);
         }
         
         function createLevel() {
@@ -406,8 +411,7 @@
             scene = 'lobby'
             let background = this.add.tileSprite(0, 0, game.scale.width, game.scale.height, 'lobby').setOrigin(0, 0);
 
-                       backgroundMusic = this.sound.add('backgroundMusic', { volume: 1.5, loop: true });
-                       backgroundMusic.play();
+           
 
                       player = new Playertd(this, 400, 400);
 
@@ -473,7 +477,6 @@
                  
                        
                      this.input.on('pointermove', function (pointer) {
-            console.log(`Mouse Position: x=${pointer.x}, y=${pointer.y}`);
         });
         this.input.on('pointerdown', (pointer) => {
                 if (overlayVisible && pointer.x >= 140 && pointer.x <= 669 && pointer.y >= 193 && pointer.y <= 246) {
@@ -513,7 +516,8 @@
             let stalagmite1 = this.physics.add.image(300, 530, 'stalagmite1'); 
             stalagmite1.body.setAllowGravity(false);
             stalagmite1.body.immovable = true; 
-            stalagmite1.setScale(0.1);
+            stalagmite1.setScale(0.2);
+            stalagmite1.body.setScale(0.15)
 
             let caveTeleporter = this.physics.add.image(1530, 480, 'cave_teleporter');
             caveTeleporter.body.setAllowGravity(false);
@@ -609,17 +613,24 @@
         game.scale.resize(width, height);
     }
 
-    function mineCrystal() {
-        if (crystal.visible && game.input.activePointer.isDown)
-        timer ++
-        console.log(timer)
+    const mineCrystal = async() => {
         
-        if (crystal.visible && game.input.activePointer.isDown && timer >= 1000)
+        if (crystal.visible && game.input.activePointer.isDown) {
+        await delay(2000)
+        if (crystal.visible && game.input.activePointer.isDown) {
+        crystal.visible = false
         coins += 5
-        
-        timer = 0
-
+        console.log(coins)
+        }
     }
+
+    function setUp() {
+        backgroundMusic.stop();
+        lobby
+    }
+         
+
+    };
 
         
         
