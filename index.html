@@ -163,10 +163,10 @@
 
         function update() {
             if (switch1.isDown) {  
-                level.call(this);  
+                levelOne.call(this);  
             }
             
-            if (scene === 'level'){
+            if (scene === 'levelOne'){
                 
                 //console.log('o')
                 
@@ -356,9 +356,9 @@
             }
         }
 
-        function level() {
+        function levelOne() {
             
-            scene = 'level'
+            scene = 'levelOne'
             console.log(scene)
             jump = true
             
@@ -415,7 +415,7 @@
             platform.create(1200, 800, 'cave_ground').setScale(1).refreshBody();
             
             //level
-            current_level = map.createLayer('level', tileset)
+            current_level = map.createLayer('levelOne', tileset)
             current_level.setCollisionBetween(0, 199)
             //current_level = this.physics.add.staticGroup();
             //this.add.existing(current_level)
