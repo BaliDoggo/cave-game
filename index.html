@@ -52,7 +52,7 @@
             physics: {
                 default: 'arcade',
             arcade: {
-                debug: false
+                debug: true
             }
             },
             scene: {
@@ -106,6 +106,7 @@
         const delay = ms => new Promise(res => setTimeout(res, ms));
 
 
+        var caveTeleporter;
         var player;
         var platforms;
         var platform;
@@ -407,6 +408,11 @@
         }
 
         function lobby() {
+            if (scene === 'levelOne') {
+                //caveTeleporter.destroy()
+                player.destroy()
+            }
+            
             resizeGame(800,800);
             scene = 'lobby'
             let background = this.add.tileSprite(0, 0, game.scale.width, game.scale.height, 'lobby').setOrigin(0, 0);
@@ -519,7 +525,7 @@
             stalagmite1.setScale(0.2);
             stalagmite1.body.setScale(0.15)
 
-            let caveTeleporter = this.physics.add.image(1530, 480, 'cave_teleporter');
+            caveTeleporter = this.physics.add.image(1530, 480, 'cave_teleporter');
             caveTeleporter.body.setAllowGravity(false);
             caveTeleporter.body.immovable = true; 
             caveTeleporter.setScale(0.2);
@@ -626,11 +632,14 @@
 
     function setUp() {
         backgroundMusic.stop();
+        caveTeleporter.destroy()
+        player.destroy()
         lobby
     }
          
 
     };
+   
 
         
         
