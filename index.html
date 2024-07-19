@@ -4,16 +4,26 @@
 
 <head>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    <style media='screen' type='text/css'>
+      @font-face {
+        font-family: handwritten;
+        src: url('assets/fonts/Alkhemikal.ttf');
+        font-weight:400;
+        font-weight:normal;
+      }
+</style>
 </head>
 
 <body>
+    <div style="font-family:font1; position:absolute; left:-1000px; visibility:hidden;">.</div>
     <script>
+
         
-                   var gui;
-                   var guiTimer;
+        var gui;
+        var guiTimer;
         var overlay;
-                   var overlayVisible;
-                    var backgroundMusic;
+        var overlayVisible;
+        var backgroundMusic;
 
           class Playertd extends Phaser.Physics.Arcade.Sprite
                    {
@@ -30,15 +40,19 @@
                        }
                    }
 
+
         class PhysicsSprite extends Phaser.Physics.Arcade.Sprite {
         }
 
         var config = {
             type: Phaser.AUTO,
-            width: 800,
+            width: 1600,
             height: 800,
             physics: {
                 default: 'arcade',
+            arcade: {
+                debug: true
+            }
             },
             scene: {
                 preload: preload,
@@ -70,24 +84,43 @@
                 this.setGravityY(0)
                 this.setBounce(0, 0)
                 this.bodyType = 1
+                this.body.setSize(80, 80)
                 
+            }
+        }
+        
+        class Level extends Phaser.Physics.Arcade.Sprite {
+            constructor(scene, x, y, image) {
+                super(scene, x, y, image);
+                scene.add.existing(this)
+                scene.physics.add.existing(this)
+                this.setCollideWorldBounds(false)
+                this.setGravity(0, 0)
+                this.bodyType = 1
             }
         }
 
         var game = new Phaser.Game(config);
-
         
         var player;
         var platforms;
         var platform;
+
+        var carrots = [];
+    var totalCarrots = 12;
         
         var switch1;
         var keys;
+        var cursors;
         var scene;
         
         var graphics;
         
         var jump;
+        
+        var current_level;
+        var climb;
+        var mine = false;
         
         
 
@@ -97,10 +130,9 @@
             this.load.atlas('player', 'assets/player/player.png', 'assets/player/player.json');
             this.load.image('player_old', 'assets/player/player_idle.png')
             this.load.image('platform', 'assets/platform.png');
-            this.load.image('block', 'assets/cave/block.png');
-            this.load.image('lava', 'assets/cave/lava.png');
-                       this.load.image('lobby', 'assets/lobby.png');
-                       this.load.image('player', 'assets/playerf1.png');
+            this.load.tilemapTiledJSON('level_1', 'assets/cave/levels/level_1.json')
+            this.load.image('lobby', 'assets/lobby.png');
+                       this.load.image('playertd', 'assets/playerf1.png');
                        this.load.image('playerr1', 'assets/playerr1.png');
                        this.load.image('playerl1', 'assets/playerl1.png');
                        this.load.image('playerb1', 'assets/playerb1.png');
@@ -118,13 +150,13 @@
                        this.load.image('teleporter', 'assets/teleporter.png');
                        this.load.audio('backgroundMusic', 'assets/backgroundMusic.mp3');
                        this.load.image('stonepick', 'assets/stonepick.png');
-        
         }
 
         function create () {
+            
             lobby.call(this)
             switch1 = this.input.keyboard.addKey('Q');
-            keys = this.input.keyboard.addKeys('W, A, S, D, M');
+            keys = this.input.keyboard.addKeys('W, A, S, D, M, F, SHIFT');
             
             graphics = this.add.graphics()
         }
@@ -136,33 +168,85 @@
             
             if (scene === 'level'){
                 
+                //console.log('o')
+                
+                //this.cameras.main.setPosition(-player.x+400, 0)-
+                let direction;
+                
+                if (game.input.activePointer.isDown) {
+                    var mine = true
+                    player.setVelocityX(0)
+                    console.log(mine)
+                } else {
+                    mine = false
+                }
+
+                if (mine && direction === 'left') {
+                    player.play(player.animations['mine_l'], true)
+                } else if (mine) {
+                    player.play(player.animations['mine_r'], true)
+                }
+                
                 if (keys.W.isDown && jump === true){
-                    player.setVelocityY(-500)
+                    player.setVelocityY(-600)
                     jump = false
                 }
+                
+                
+
                 if (keys.A.isDown){
                     player.setVelocityX(-250)
                     player.play(player.animations['run_l'], true);
+                    direction = 'left'
                 } else if (keys.D.isDown){
                     player.setVelocityX(250)
-                    background.tilePositionX += 2;
                     player.play(player.animations['run_r'], true);
-                } else {
+                    direction = 'right'
+                } else if (direction === 'left' && !game.input.activePointer.isDown) {
                     player.setVelocityX(0)
                     player.play(player.animations['idle_l'], true);
+                
+                }else if (!game.input.activePointer.isDown){
+                    player.setVelocityX(0)
+                    player.play(player.animations['idle_r'], true);
+                } else if (direction === 'left') {
+                    player.play(player.animations['mine_l'], true)
+                } else if (direction === 'right') {
+                    player.play(player.animations['mine_r'], true)
                 }
+            
                 
                 if (keys.S.isDown){
                     return
                 }
                 
-                if (player.body.touching.down) {
+                if (player.body.onFloor()) {
                     jump = true
+                } else {
+                    jump = false
                 }
+                
+                if (player.body.blocked.right) {
+                    climb = true
+                } else if (player.body.blocked.left) {
+                    climb = true
+                } else {
+                    climb = false
+                }
+                
+                if (player.body.blocked.left && keys.SHIFT.isDown) {
+                    player.setVelocityY(-100)
+                    player.setVelocityX(-10)
+                    player.play(player.animations['climb_l'], true);
+                } else if (player.body.blocked.right && keys.SHIFT.isDown) {
+                    player.setVelocityY(-100)
+                    player.setVelocityX(10)
+                    player.play(player.animations['climb_r'], true);
+            }
                 
             }
             
-            if (scene === 'lobby'){
+             if (scene === 'lobby'){
                                     if (player.x > 500 && player.x < 750 && player.y > 50 && player.y < 140) {
                            gui.setText('Press F to enter Blacksmith');
                            if (Phaser.Input.Keyboard.JustDown(keys.F)) {
@@ -262,7 +346,7 @@
                    } else {
                        player.anims.stop();
                        // Set a default frame when not moving
-                       player.setTexture('player'); // Replace 'player' with the default facing frame
+                       player.setTexture('playertd'); // Replace 'player' with the default facing frame
                    }
 
 
@@ -273,12 +357,14 @@
         }
 
         function level() {
+            
             scene = 'level'
             console.log(scene)
             jump = true
+            
+            this.add.text(400, 400, 'argula', {fontFamily: 'handwritten',});
 
-
-            background = this.add.tileSprite(400, 500, 800, 800, 'cave_background').setScale(1.25);
+            background = this.add.tileSprite(800, 500, 1600, 800, 'cave_background').setScale(1.25);
             
             let playerAnims = {};
             var idle_l = this.anims.create({key: 'idle_l', frames: this.anims.generateFrameNames('player', {prefix: 'idle_l', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
@@ -289,17 +375,52 @@
             playerAnims['run_l'] = run_l
             var run_r = this.anims.create({key: 'run_r', frames: this.anims.generateFrameNames('player', {prefix: 'run_r_', end: 3, zeroPad: 1}), repeat: -1, frameRate: 10})
             playerAnims['run_r'] = run_r
+            var crouch_r = this.anims.create({key: 'crouch_r', frames: this.anims.generateFrameNames('player', {prefix: 'crouch_r', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['crouch_r'] = crouch_r
+            var crouch_l = this.anims.create({key: 'crouch_l', frames: this.anims.generateFrameNames('player', {prefix: 'crouch_l', end: 0, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['crouch_l'] = crouch_l
+            var climb_l = this.anims.create({key: 'climb_l', frames: this.anims.generateFrameNames('player', {prefix: 'climb_l_', end: 2, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['climb_l'] = climb_l
+            var climb_r = this.anims.create({key: 'climb_r', frames: this.anims.generateFrameNames('player', {prefix: 'climb_r_', end: 2, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['climb_r'] = climb_r
+            var mine_l = this.anims.create({key: 'mine_l', frames: this.anims.generateFrameNames('player', {prefix: 'mine_l_', end: 1, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['mine_l'] = mine_l
+            var mine_r = this.anims.create({key: 'mine_r', frames: this.anims.generateFrameNames('player', {prefix: 'mine_r_', end: 1, zeroPad: 1}), repeat: -1, frameRate: 10})
+            playerAnims['mine_r'] = mine_r
             
-            platform = this.physics.add.staticGroup();
-            platform.create(400, 800, 'cave_ground').setScale(1).refreshBody();
             
-            player = new Player(this, 400, 400, 'player', playerAnims);
+            createLevel.call(this)
+            
+            player = new Player(this, 400, 0, 'player', playerAnims);
             this.physics.add.collider(player, platform);
+            this.physics.add.collider(player, current_level);
             player.play(player.animations['idle_l']);
+            
+            //this.cameras.main.startFollow(player, true)
+            
+            /*this.physics.add.overlap(player, current_level, function () {
+            climb = true;
+            });*/
         }
         
-        function createGround(scene) {
-            return
+        function createLevel() {
+            
+            var map = this.make.tilemap({key: 'level_1' })
+            
+            var tileset = map.addTilesetImage('cave_ground')
+            
+            platform = this.physics.add.staticGroup();
+            //floor
+            platform.create(400, 800, 'cave_ground').setScale(1).refreshBody();
+            platform.create(1200, 800, 'cave_ground').setScale(1).refreshBody();
+            
+            //level
+            current_level = map.createLayer('level', tileset)
+            current_level.setCollisionBetween(0, 199)
+            //current_level = this.physics.add.staticGroup();
+            //this.add.existing(current_level)
+            //this.physics.add.existing(current_level)
+            
         }
 
         function lobby() {
@@ -312,7 +433,7 @@
                       player = new Playertd(this, 400, 400);
 
 
-                      this.physics.add.overlap(player, carrots, eatCarrot, null, this);
+                      this.physics.add.overlap(player, null, this);
 
                       //Set up user input
                       cursors = this.input.keyboard.createCursorKeys();
@@ -350,7 +471,7 @@
                    this.anims.create({
                        key: 'up',
                        frames: [
-                           { key: 'player' },
+                           { key: 'playertd' },
                            { key: 'playerf2' },
                            { key: 'playerf3' }
                        ],
@@ -379,7 +500,19 @@
                         
                    
         }
-        
+
+        function eatCarrot(player, carrot)
+    {
+        carrot.disableBody(true, true); //remove that particular carrot from the game (physics and visibility)
+        gui.setText('Yum yum!');
+        guiTimer = this.time.delayedCall(1000, removeText, [], this);
+    }
+
+    function removeText()
+    {
+        gui.setText('');
+    }
+
         
         
     </script>
