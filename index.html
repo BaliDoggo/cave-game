@@ -171,6 +171,10 @@
             if (switch1.isDown) {  
                 levelOne.call(this);  
             }
+
+            if(switch2.isDown) {
+                levelTwo.call(this);
+            }
             
             if (scene === 'levelOne'){
                 resizeGame(1600,800);
